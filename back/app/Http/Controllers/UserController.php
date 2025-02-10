@@ -30,11 +30,11 @@ class UserController extends Controller
         ]);
         return response()->json(['message' => 'Usuario creado', 'data' => $user], 200);
     }
-    public function showAll($id){
+    public function show($id){
         $user = User::findOrFail($id);
         return response()->json(['message' => '', 'data' => $user], 200);
     }
-    public function show(){
+    public function showAll(){
         $user = User::all();
         return response()->json(['message' => '', 'data' => $user], 200);
     }
