@@ -3,7 +3,6 @@
 </script>
 
 <template>
-    <div class="container-fluid p-4">
       <h3>Búsqueda de actividades</h3>
       <div class="mb-3 d-flex">
         <input type="text" class="form-control me-2" placeholder="Buscar actividades...">
@@ -55,7 +54,6 @@
       <div class="mt-3">
         <button class="btn btn-dark w-100">Buscar</button>
       </div>
-    </div>
   </template>
   
 
