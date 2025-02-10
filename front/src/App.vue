@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import encabezado from './components/layout/Header.vue'
+import encabezado from './components/user/filters/filtersUser.vue'
 import pie from './components/layout/Footer.vue'
 </script>
 
