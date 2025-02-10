@@ -19,6 +19,7 @@ Route::controller(ActionController::class)->group(function () {
 });
 
 Route::controller(UserController::class)->group(function () {
+    Route::post("login", "login");
     Route::post('user', 'store');
     Route::get('user/all','showAll');
     Route::get('user/{user}', 'show');
