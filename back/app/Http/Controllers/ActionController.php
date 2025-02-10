@@ -40,10 +40,12 @@ class ActionController extends Controller
         ]);
         return response()->json(['message' => 'Accion creada', 'data' => $action], 200);
     }
-    public function showAll(){
-        $action = Action::all();
-        return response()->json(['message' => '', 'data' => $action->center], 200);
+    public function showAll()
+    {
+        $actions = Action::with('center')->get();
+        return response()->json(['message' => '', 'data' => $actions], 200);
     }
+
     public function show($id)
     {
         $action = Action::findOrFail($id);
