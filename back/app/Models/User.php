@@ -45,4 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function actions(){
+        return $this->belongsToMany(Action::class)->withTimestamps();
+    }
 }
