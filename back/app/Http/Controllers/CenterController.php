@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class CenterController extends Controller
 {
-    public function index(){
+    public function showAll(){
         $centers = Center::all();
         return response()->json($centers);
     }
 
-    public function create(Request $request): \Illuminate\Http\JsonResponse
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -31,7 +31,7 @@ class CenterController extends Controller
         return response()->json(['Center' => $center], 201);
     }
 
-    public function edit(Request $request, $id): \Illuminate\Http\JsonResponse
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -53,7 +53,7 @@ class CenterController extends Controller
         return response()->json(['Center' => $center]);
     }
 
-    public function delete($id): \Illuminate\Http\JsonResponse
+    public function destroy($id): \Illuminate\Http\JsonResponse
     {
         $center = Center::find($id);
 
@@ -66,7 +66,7 @@ class CenterController extends Controller
         return response()->json(['message' => 'Centro eliminado correctamente']);
     }
 
-    public function showCenter($id): \Illuminate\Http\JsonResponse{
+    public function show($id): \Illuminate\Http\JsonResponse{
         $center = Center::find($id);
         return response()->json($center);
     }
