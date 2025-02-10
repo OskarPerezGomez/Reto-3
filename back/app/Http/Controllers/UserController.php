@@ -67,4 +67,28 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado', 'data' => $user], 200);
     }
+    public function login(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        $credentials = $request->only('email', 'password');
+        $token = Auth::attempt($credentials);
+        if (!$token) {
+            return response()->json([
+                'error' => 'Correo o contraseña errónea.',
+            ], 401);
+        }
+        $user = Auth::user();
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => $user,
+        ]);
+    }
 }
