@@ -1,5 +1,10 @@
 <script setup>
+import {useRouter} from "vue-router";
 
+const router = useRouter();
+  function iniciarSesion(){
+    router.push({path: "/login"});
+  }
 </script>
 
 <template>
@@ -11,7 +16,7 @@
       </div>
 
       <div class="col-2">
-        <button class="btn btn-success">Iniciar sesión</button>
+        <button class="btn btn-success" @click="iniciarSesion()">Iniciar sesión</button>
       </div>
 
     </div>

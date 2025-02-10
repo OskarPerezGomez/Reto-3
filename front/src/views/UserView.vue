@@ -1,4 +1,4 @@
-<script>
+<script setup>
 import encabezado from "../components/layout/Header.vue"
 import pie from '../components/layout/Footer.vue';
 </script>
