@@ -16,6 +16,7 @@ class ActionController extends Controller
             'date_end' => 'required|date',
             'age' => 'required|integer',
             'languaje' => 'required|string|max:255',
+            'duration' => 'required|integer',
             'start_time' => 'required|date',
             'capacity' => 'required|integer',
             'price' => 'required|integer',
@@ -31,6 +32,7 @@ class ActionController extends Controller
             'date_end' => $request->get('date_end'),
             'age' => $request->get('age'),
             'languaje' => $request->get('languaje'),
+            'duration' => $request->get('duration'),
             'start_time' => $request->get('start_time'),
             'capacity' => $request->get('capacity'),
             'price' => $request->get('price'),
@@ -38,10 +40,12 @@ class ActionController extends Controller
         ]);
         return response()->json(['message' => 'Accion creada', 'data' => $action], 200);
     }
-    public function showAll(){
-        $action = Action::all();
-        return response()->json(['message' => '', 'data' => $action], 200);
+    public function showAll()
+    {
+        $actions = Action::with('center')->get();
+        return response()->json(['message' => '', 'data' => $actions], 200);
     }
+
     public function show($id)
     {
         $action = Action::findOrFail($id);
@@ -56,6 +60,7 @@ class ActionController extends Controller
             'date_init' => 'sometimes|date',
             'date_end' => 'sometimes|date',
             'age' => 'sometimes|integer',
+            'duration' => 'sometimes|integer',
             'languaje' => 'sometimes|string|max:255',
             'start_time' => 'sometimes|date',
             'capacity' => 'sometimes|integer',
@@ -70,6 +75,7 @@ class ActionController extends Controller
         $action->date_init = $request->get('date_init', $action->date_init);
         $action->date_end = $request->get('date_end', $action->date_end);
         $action->age = $request->get('age', $action->age);
+        $action->duration = $request->get('duration', $action->duration);
         $action->languaje = $request->get('languaje', $action->languaje);
         $action->start_time = $request->get('start_time', $action->start_time);
         $action->capacity = $request->get('capacity', $action->capacity);
@@ -82,5 +88,18 @@ class ActionController extends Controller
     {
         $action = Action::findOrFail($id);
         return response()->json(['message'=>'Accion eliminada', 'data' => $action], 200);
+    }
+
+    public function center()
+    {
+        $actions = Action::select(
+            'actions.*',
+            'centers.name as center_name',
+            'centers.address as center_address'
+        )
+            ->join('centers', 'actions.center_id', '=', 'centers.id')
+            ->get();
+
+        return response()->json(['message' => '', 'data' => $actions], 200);
     }
 }

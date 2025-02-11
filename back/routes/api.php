@@ -12,24 +12,26 @@ Route::get('/user', function (Request $request) {
 
 Route::controller(ActionController::class)->group(function () {
     Route::post('action', 'store');
+    Route::get('action/center', 'center');
+    Route::get('action/all','showAll');
     Route::get('action/{action}', 'show');
-    Route::get('action/actions','showAll');
     Route::put('action/{action}/update', 'update');
     Route::delete('action/{action}/destroy', 'destroy');
 });
 
 Route::controller(UserController::class)->group(function () {
+    Route::post("login", "login");
     Route::post('user', 'store');
+    Route::get('user/all','showAll');
     Route::get('user/{user}', 'show');
-    Route::get('user/users','showAll');
     Route::put('user/{user}/update', 'update');
     Route::delete('user/{user}/destroy', 'destroy');
 });
 
 Route::controller(CenterController::class)->group(function () {
     Route::post('center', 'store');
+    Route::get('center/all','showAll');
     Route::get('center/{center}', 'show');
-    Route::get('center/centers','showAll');
     Route::put('center/{center}/update', 'update');
     Route::delete('center/{center}/destroy', 'destroy');
 });

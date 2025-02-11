@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
@@ -30,14 +31,19 @@ class UserController extends Controller
         ]);
         return response()->json(['message' => 'Usuario creado', 'data' => $user], 200);
     }
-    public function showAll($id){
+
+    public function show($id)
+    {
         $user = User::findOrFail($id);
         return response()->json(['message' => '', 'data' => $user], 200);
     }
-    public function show(){
+
+    public function showAll()
+    {
         $user = User::all();
         return response()->json(['message' => '', 'data' => $user], 200);
     }
+
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -61,10 +67,37 @@ class UserController extends Controller
         $user->save();
         return response()->json(['message' => 'Usuario actualizado', 'data' => $user], 200);
     }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado', 'data' => $user], 200);
     }
+
+    public function login(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Buscar usuario por email
+        $user = User::where('email', $request->email)->first();
+
+        // Verificar si el usuario existe y si la contraseña es correcta
+        if ($user && Hash::check($request->password, $user->password)) {
+            return response()->json($user);
+        }
+
+        return response()->json(['message' => 'Credenciales incorrectas'], 401);
+    }
+
+
+
 }
+
