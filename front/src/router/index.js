@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import userView from '../views/UserView.vue'
 import login from "../components/Login.vue";
 import register from "../components/Register.vue"
+import panel from "../components/admin/AdminPanel.vue"
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -14,12 +16,21 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: login,
-
     },
     {
       path: '/register',
       name: '/register',
       component: register,
+    },
+    {
+      path: '/perfil',
+      name: '/perfil',
+      component: perfil,
+    },
+    {
+      path: '/panel',
+      name: '/panel',
+      component: panel,
     },
   ],
 })
