@@ -89,4 +89,17 @@ class ActionController extends Controller
         $action = Action::findOrFail($id);
         return response()->json(['message'=>'Accion eliminada', 'data' => $action], 200);
     }
+
+    public function center()
+    {
+        $actions = Action::select(
+            'actions.*',
+            'centers.name as center_name',
+            'centers.address as center_address'
+        )
+            ->join('centers', 'actions.center_id', '=', 'centers.id')
+            ->get();
+
+        return response()->json(['message' => '', 'data' => $actions], 200);
+    }
 }
