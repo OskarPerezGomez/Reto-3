@@ -1,11 +1,74 @@
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
+import Swal from 'sweetalert2';
+import {useRouter} from "vue-router";
+
 const mail = ref("");
 const pass = ref("");
+const users = ref([]);
+const router = useRouter();
+const API_SERVER = import.meta.env.VITE_API_SERVER; // Asegúrate de que la variable esté en .env
+const userSession = ref("");
+async function validarUsuario() {
+  this.error = null;
+  this.isLoading = true;
 
+  try {
+    const response = await axios.post(`${API_SERVER}/api/login`, {
+      email: mail.value,
+      password: pass.value,
+    });
 
-function validarUsuario(){
+    sessionStorage.setItem("user", JSON.stringify(response.data));
+    userSession.value = sessionStorage.getItem("user");
 
+    if (userSession.value) {
+      router.push({ path: "/" });
+    }
+
+  } catch (error) {
+    // ⚠️ Evita que Axios muestre el error en la consola
+    if (error.response) {
+      if (error.response.status === 400) {
+        Swal.fire({
+          icon: "error",
+          title: "Credenciales incorrectas",
+          text: "Verifica tu correo y contraseña.",
+        });
+      } else if (error.response.status === 422) {
+        Swal.fire({
+          icon: "error",
+          title: "Error de validación",
+          text: "Verifica los datos ingresados.",
+        });
+      } else if (error.response.status === 500) {
+        Swal.fire({
+          icon: "error",
+          title: "Error del servidor",
+          text: "Inténtalo más tarde.",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error desconocido",
+          text: `Código: ${error.response.status}`,
+        });
+      }
+    } else {
+      // Si no hay respuesta del servidor (error de conexión, por ejemplo)
+      Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+        text: "No se pudo conectar con el servidor.",
+      });
+    }
+  } finally {
+    this.isLoading = false;
+  }
+}
+function register(){
+  router.push({path: "/register"});
 }
 </script>
 
@@ -32,7 +95,7 @@ function validarUsuario(){
           <div class="form-floating w-75 mx-auto">
             <input
                 type="password"
-                id="email"
+                id="pass"
                 v-model="pass"
                 class="form-control"
                 placeholder=" "
@@ -44,7 +107,7 @@ function validarUsuario(){
         <button class="btn btn-success w-75 mx-auto my-2" @click="validarUsuario()">Iniciar sesión</button>
 
         <p class="mt-3 text-muted">
-          Explora y regístrate en nuestras actividades deportivas y culturales
+          <a href="" @click="register()">Registrate</a> y explora nuestras actividades deportivas y culturales
         </p>
       </div>
     </div>
@@ -64,24 +127,26 @@ function validarUsuario(){
 
 .form-floating label {
   position: absolute;
-  top: 50%; /* Centrado verticalmente */
+  top: 30%; /* Centrado verticalmente */
   left: 0.75rem;
   transform: translateY(-30%);
   font-size: 1rem;
   color: #6c757d;
   transition: all 0.2s ease-in-out;
-  background-color: transparent; /* Fondo transparente antes de hacer clic */
-  padding: 0 5px;
+  background-color: white; /* Fondo transparente antes de hacer clic */
+  padding: 0;
   z-index: 2;
+  height: auto;
   pointer-events: none;
 }
 
 .form-floating input:focus ~ label,
 .form-floating input:not(:placeholder-shown) ~ label {
-  top: 0.1rem;
+  top: -0.3rem;
   font-size: 1rem;
-  color: #495057;
-  padding: 1px;
+  color: black;
+  background-color: white;
+  z-index: 1000;
 }
 
 </style>

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('date_end');
             $table->integer('age');
             $table->string('languaje');
-            $table->date('start_time');
+            $table->time('start_time');
             $table->integer('capacity');
             $table->integer('price');
             $table->integer('duration');

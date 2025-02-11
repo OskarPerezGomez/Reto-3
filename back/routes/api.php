@@ -12,6 +12,7 @@ Route::get('/user', function (Request $request) {
 
 Route::controller(ActionController::class)->group(function () {
     Route::post('action', 'store');
+    Route::get('action/center', 'center');
     Route::get('action/all','showAll');
     Route::get('action/{action}', 'show');
     Route::put('action/{action}/update', 'update');
@@ -19,11 +20,13 @@ Route::controller(ActionController::class)->group(function () {
 });
 
 Route::controller(UserController::class)->group(function () {
+    Route::post("login", "login");
     Route::post('user', 'store');
     Route::get('user/all','showAll');
     Route::get('user/{user}', 'show');
     Route::put('user/{user}/update', 'update');
     Route::delete('user/{user}/destroy', 'destroy');
+    Route::post('user/join', 'join');
 });
 
 Route::controller(CenterController::class)->group(function () {
