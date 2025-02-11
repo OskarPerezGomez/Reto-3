@@ -20,29 +20,56 @@ async function validarUsuario() {
       password: pass.value,
     });
 
-    sessionStorage.setItem('user', JSON.stringify(response.data)); // Guardar en sessionStorage
-    userSession.value = sessionStorage.getItem('user');
-        console.log('Datos guardados en sessionStorage:', response.data);
+    sessionStorage.setItem("user", JSON.stringify(response.data));
+    userSession.value = sessionStorage.getItem("user");
 
-    if (userSession){
-      router.push({path: '/'});
-    }
-    else {
-
+    if (userSession.value) {
+      router.push({ path: "/" });
     }
 
   } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    this.error = error;
+    // ⚠️ Evita que Axios muestre el error en la consola
+    if (error.response) {
+      if (error.response.status === 400) {
+        Swal.fire({
+          icon: "error",
+          title: "Credenciales incorrectas",
+          text: "Verifica tu correo y contraseña.",
+        });
+      } else if (error.response.status === 422) {
+        Swal.fire({
+          icon: "error",
+          title: "Error de validación",
+          text: "Verifica los datos ingresados.",
+        });
+      } else if (error.response.status === 500) {
+        Swal.fire({
+          icon: "error",
+          title: "Error del servidor",
+          text: "Inténtalo más tarde.",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error desconocido",
+          text: `Código: ${error.response.status}`,
+        });
+      }
+    } else {
+      // Si no hay respuesta del servidor (error de conexión, por ejemplo)
+      Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+        text: "No se pudo conectar con el servidor.",
+      });
+    }
   } finally {
     this.isLoading = false;
   }
 }
-
-
-
-
-
+function register(){
+  router.push({path: "/register"});
+}
 </script>
 
 <template>
@@ -80,7 +107,7 @@ async function validarUsuario() {
         <button class="btn btn-success w-75 mx-auto my-2" @click="validarUsuario()">Iniciar sesión</button>
 
         <p class="mt-3 text-muted">
-          Registrate y explora nuestras actividades deportivas y culturales
+          <a href="" @click="register()">Registrate</a> y explora nuestras actividades deportivas y culturales
         </p>
       </div>
     </div>
