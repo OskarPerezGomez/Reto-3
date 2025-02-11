@@ -2,7 +2,7 @@
 
 return [
     'paths' => ['api/*'], // Rutas donde CORS está habilitado
-    'allowed_methods' => ['*'], // Métodos HTTP permitidos, usa '*' para todos
+    'allowed_methods' => [''], // Métodos HTTP permitidos, usa '' para todos
     'allowed_origins' => ['*'], // Orígenes permitidos
     'allowed_origins_patterns' => [], // Patrones para orígenes
     'allowed_headers' => ['*'], // Encabezados permitidos

@@ -1,9 +1,13 @@
 <script setup>
 import {useRouter} from "vue-router";
-
+const user = sessionStorage.getItem('user');
 const router = useRouter();
   function iniciarSesion(){
     router.push({path: "/login"});
+  }
+  function cerrarSesion(){
+    sessionStorage.clear();
+    location.reload();
   }
 </script>
 
@@ -14,7 +18,13 @@ const router = useRouter();
         <h1>Actividades disponibles</h1>
         <p>Explora y regístrate en nuestras actividades deportivas y culturales</p>
       </div>
+      <div v-if="!user">
       <button class="btn btn-success" @click="iniciarSesion()">Iniciar sesión</button>
+      </div>
+      <div v-if="user">
+        <button class="btn btn-success" @click="cerrarSesion()">Cerrar sesión</button>
+        <a href="">Perfil user</a>
+      </div>
     </div>
   </div>
 
