@@ -1,49 +1,44 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import Swal from 'sweetalert2';
+import {useRouter} from "vue-router";
 
 const mail = ref("");
 const pass = ref("");
 const users = ref([]);
+const router = useRouter();
 const API_SERVER = import.meta.env.VITE_API_SERVER; // Asegúrate de que la variable esté en .env
+const userSession = ref("");
 async function validarUsuario() {
   this.error = null;
   this.isLoading = true;
+
   try {
-    const response = await axios.post(
-        `${API_SERVER}/api/auth/login`,
-        {
-          email: mail.value,
-          password: pass.value,
-        }
-    );
-    sessionStorage.setItem('token', response.data.access_token);
-    sessionStorage.setItem('user', JSON.stringify(response.data.user));
-    const expiresIn = 3600;
-    const expirationTime =  Date.now() + expiresIn * 1000;
-    sessionStorage.setItem('token_expiration', expirationTime);
-    setTimeout(() => {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('token_expiration');
-      sessionStorage.removeItem('user');
-      alert('Tu sesión ha caducado. Por favor, inicia sesión de nuevo.');
-      this.$router.push({ name: 'login' });
-    }, expiresIn * 1000);
-    const userId = response.data.user.id;
-    const userRole = response.data.user.role;
-    if (userRole === 'tecnico') {
-      this.$router.push(`/tecnico/${userId}`);
-    } else if (userRole === 'admin') {
-      this.$router.push(`/admin/${userId}`);
-    } else {
-      this.$router.push(`/user/${userId}`);
+    const response = await axios.post(`${API_SERVER}/api/login`, {
+      email: mail.value,
+      password: pass.value,
+    });
+
+    sessionStorage.setItem('user', JSON.stringify(response.data)); // Guardar en sessionStorage
+    userSession.value = sessionStorage.getItem('user');
+        console.log('Datos guardados en sessionStorage:', response.data);
+
+    if (userSession){
+      router.push({path: '/'});
     }
-  } catch (err) {
-    this.error = err.response?.data?.error || 'Ha ocurrido un error.';
+    else {
+
+    }
+
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    this.error = error;
   } finally {
     this.isLoading = false;
   }
-};
+}
+
 
 
 
