@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Action;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,19 +32,16 @@ class UserController extends Controller
         ]);
         return response()->json(['message' => 'Usuario creado', 'data' => $user], 200);
     }
-
     public function show($id)
     {
         $user = User::findOrFail($id);
         return response()->json(['message' => '', 'data' => $user], 200);
     }
-
     public function showAll()
     {
         $user = User::all();
         return response()->json(['message' => '', 'data' => $user], 200);
     }
-
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -67,14 +65,12 @@ class UserController extends Controller
         $user->save();
         return response()->json(['message' => 'Usuario actualizado', 'data' => $user], 200);
     }
-
     public function destroy($id)
     {
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado', 'data' => $user], 200);
     }
-
     public function login(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -85,19 +81,25 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
-        // Buscar usuario por email
         $user = User::where('email', $request->email)->first();
-
-        // Verificar si el usuario existe y si la contraseña es correcta
         if ($user && Hash::check($request->password, $user->password)) {
             return response()->json($user);
         }
-
         return response()->json(['message' => 'Credenciales incorrectas'], 401);
     }
-
-
-
+    public function join(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'user_id' => 'required|integer',
+            'action_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        $user = User::where('id', request()->get('user_id'))->firstOrFail();
+        $action = Action::where('id', request()->get('action_id'))->firstOrFail();
+        if ($user->actions()->save($action)){
+            return response()->json(['message'=>'Usuario asociado','data'=>$user, $action], 200);
+        }
+    }
 }
 
