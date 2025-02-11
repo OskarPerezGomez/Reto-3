@@ -35,7 +35,7 @@ function panelAdmin(){
 <template>
   <div class="row justify-content-center mt-3">
     <div class="col-12 d-flex justify-content-between align-items-center mt-2 mb-5">
-      <div class="text-center flex-grow-1">
+      <div class="flex-grow-1 d-flex flex-column align-items-start">
         <h1>Actividades disponibles</h1>
         <p>Explora y regístrate en nuestras actividades deportivas y culturales</p>
       </div>
