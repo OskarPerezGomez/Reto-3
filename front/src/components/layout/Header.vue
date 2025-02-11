@@ -1,14 +1,29 @@
 <script setup>
-import {useRouter} from "vue-router";
-const user = sessionStorage.getItem('user');
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
 const router = useRouter();
-  function iniciarSesion(){
-    router.push({path: "/login"});
+const user = ref(null);
+
+onMounted(() => {
+  const storedUser = sessionStorage.getItem("user");
+  if (storedUser) {
+    try {
+      user.value = JSON.parse(storedUser); // Convertimos el string a objeto
+    } catch (error) {
+      console.error("Error al parsear el usuario:", error);
+    }
   }
-  function cerrarSesion(){
-    sessionStorage.clear();
-    location.reload();
-  }
+});
+
+function iniciarSesion() {
+  router.push({ path: "/login" });
+}
+
+function cerrarSesion() {
+  sessionStorage.clear();
+  location.reload();
+}
 </script>
 
 <template>
@@ -19,17 +34,17 @@ const router = useRouter();
         <p>Explora y regístrate en nuestras actividades deportivas y culturales</p>
       </div>
       <div v-if="!user">
-      <button class="btn btn-success" @click="iniciarSesion()">Iniciar sesión</button>
+        <button class="btn btn-success" @click="iniciarSesion()">Iniciar sesión</button>
       </div>
-      <div v-if="user">
+      <div v-if="user" class="d-flex align-items-center gap-2">
         <button class="btn btn-success" @click="cerrarSesion()">Cerrar sesión</button>
-        <a href="">Perfil user</a>
+        <a href="" class="btn btn-outline-success">¡Hola de nuevo {{ user.name }}!</a>
       </div>
     </div>
   </div>
-
-
 </template>
+
+
 
 <style scoped>
 
