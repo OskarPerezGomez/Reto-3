@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import vistaUser from "./views/UserView.vue";
 
 </script>
 
