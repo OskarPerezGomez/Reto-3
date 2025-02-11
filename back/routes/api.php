@@ -25,6 +25,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('user/{user}', 'show');
     Route::put('user/{user}/update', 'update');
     Route::delete('user/{user}/destroy', 'destroy');
+    Route::post('user/join', 'join');
 });
 
 Route::controller(CenterController::class)->group(function () {
