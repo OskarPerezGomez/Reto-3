@@ -24,6 +24,12 @@ function cerrarSesion() {
   sessionStorage.clear();
   location.reload();
 }
+function perfilUser(){
+  router.push({path: "/perfil"})
+}
+function panelAdmin(){
+  router.push({path: "/panel"})
+}
 </script>
 
 <template>
@@ -38,7 +44,13 @@ function cerrarSesion() {
       </div>
       <div v-if="user" class="d-flex align-items-center gap-2">
         <button class="btn btn-success" @click="cerrarSesion()">Cerrar sesión</button>
-        <a href="" class="btn btn-outline-success">¡Hola de nuevo {{ user.name }}!</a>
+        <div v-if="user.role === 'user'">
+          <a class="btn btn-outline-success" @click="perfilUser()">Ver perfil</a>
+        </div>
+        <div v-if="user.role === 'admin'">
+          <a class="btn btn-outline-success" @click="panelAdmin()">Panel de administracion</a>
+
+        </div>
       </div>
     </div>
   </div>
