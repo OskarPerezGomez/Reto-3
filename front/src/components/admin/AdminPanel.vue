@@ -33,43 +33,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
-// Crear una referencia reactiva para almacenar las acciones
 const actions = ref([]);
+const API_SERVER = import.meta.env.VITE_API_SERVER
 
-// Al montar el componente, hacer la solicitud a la API de Laravel
-onMounted(() => {
-  axios
-      .get('http://127.0.0.1:8000/api/action/actions')  // URL de la API en Laravel
-      .then((response) => {
-        actions.value = response.data;  // Almacenar las acciones en la referencia reactiva
-        console.log(actions.value)
-      })
-      .catch((error) => {
-        console.error('Error al obtener las actividades:', error);
-        if (error.response) {
-          // El servidor respondió con un código de error
-          console.error('Respuesta del servidor:', error.response);
-        } else if (error.request) {
-          // La solicitud fue realizada, pero no se recibió respuesta
-          console.error('No se recibió respuesta:', error.request);
-        } else {
-          // Otro tipo de error
-          console.error('Error al configurar la solicitud:', error.message);
-        }
-      });
-});
-
-// Métodos para manejar las acciones (editar y eliminar)
-const editAction = (action) => {
-  console.log('Editar acción:', action);
+const fetchActions = async () => {
+  try {
+    const response = await axios.get(`${API_SERVER}/api/action/actions`);
+    actions.value = response.data.data;
+  } catch (error) {
+    console.error("Error al obtener las acciones:", error);
+    if (error.response) {
+      console.error("Respuesta del servidor:", error.response);
+    } else if (error.request) {
+      console.error("No se recibió respuesta:", error.request);
+    } else {
+      console.error("Error de configuración:", error.message);
+    }
+  }
 };
 
-const deleteAction = (id) => {
-  console.log('Borrar acción con ID:', id);
-};
+
+onMounted(fetchActions);
 </script>
 
 <style scoped>
