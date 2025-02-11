@@ -12,6 +12,7 @@ Route::get('/user', function (Request $request) {
 
 Route::controller(ActionController::class)->group(function () {
     Route::post('action', 'store');
+    Route::get('action/center', 'center');
     Route::get('action/all','showAll');
     Route::get('action/{action}', 'show');
     Route::put('action/{action}/update', 'update');
