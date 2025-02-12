@@ -87,6 +87,7 @@ class ActionController extends Controller
     public function destroy($id)
     {
         $action = Action::findOrFail($id);
+        $action->delete();
         return response()->json(['message'=>'Accion eliminada', 'data' => $action], 200);
     }
 
