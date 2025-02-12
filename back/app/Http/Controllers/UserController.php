@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
+
+    public function showOne($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json(['message' => '', 'data' => $user->actions], 200);
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
