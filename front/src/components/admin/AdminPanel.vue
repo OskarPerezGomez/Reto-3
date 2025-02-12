@@ -1,5 +1,6 @@
 <template>
   <div class="container mt-4">
+    <Header />
     <table class="table table-bordered text-center">
       <thead class="table-light">
       <tr>
@@ -21,6 +22,9 @@
         <td>{{ action.price }}€</td>
         <td>{{ action.capacity }}</td>
         <td class="botones">
+          <button class="btn btn-sm btn-outline-success" @click="">
+            <img src="../../assets/img/grupo.png" alt="editar">
+          </button>
           <button class="btn btn-sm btn-outline-warning" @click="editAction(action)">
             <img src="../../assets/img/editar.png" alt="editar">
           </button>
@@ -67,6 +71,8 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Header from "./HeaderAdmin.vue"
+import TheWelcome from "@/components/TheWelcome.vue";
 
 // Definir las variables
 const actions = ref([]);
