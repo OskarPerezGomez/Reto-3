@@ -1,7 +1,9 @@
+
+
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import {ref, onMounted, watch} from "vue";
 import Footer from "@/components/layout/Footer.vue";
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 import axios from "axios";
 
 const API_SERVER = import.meta.env.VITE_API_SERVER;
@@ -112,27 +114,27 @@ async function deinscribirte(id){
         <div class="mb-4">
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Nombre:</label>
-            <input type="text" v-model="user.name" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.name" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Apellido:</label>
-            <input type="text" v-model="user.lastname" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.lastname" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Email:</label>
-            <input type="text" v-model="mail" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="mail" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">DNI:</label>
-            <input type="text" v-model="user.dni" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.dni" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Contraseña:</label>
-            <input type="password" v-model="pass" class="form-control" :disabled="!isEditing" />
+            <input type="password" v-model="pass" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mt-3 text-center" v-if="isEditing">
@@ -157,7 +159,7 @@ async function deinscribirte(id){
     </div>
 
     <div class="d-flex justify-content-center my-5">
-      <Footer />
+      <Footer/>
     </div>
   </div>
 </template>

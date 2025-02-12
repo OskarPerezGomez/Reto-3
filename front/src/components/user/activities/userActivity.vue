@@ -1,9 +1,11 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, defineProps } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
-const props = defineProps(["filters"]);
+const props = defineProps({
+  filters: Object
+});
 const API_SERVER = import.meta.env.VITE_API_SERVER;
 
 const actions = ref([]);
@@ -22,6 +24,26 @@ onMounted(() => {
   }
 });
 
+const formatTime = (time) => {
+  // Si la hora está en formato 'HH:MM:SS', recortamos los últimos 3 caracteres ('SS')
+  return time ? time.slice(0, 5) : ''; 
+};
+
+const calculateEndTime = (startTime, durationInMinutes) => {
+  const [hours, minutes] = startTime.slice(0, 5).split(":").map(Number); // Recortamos la cadena de inicio
+  const startDate = new Date();
+  startDate.setHours(hours, minutes, 0); // Establecer la hora de inicio
+  
+  startDate.setMinutes(startDate.getMinutes() + durationInMinutes); // Sumar la duración
+
+  const endHour = startDate.getHours();
+  const endMinutes = startDate.getMinutes();
+
+  // Formatear la hora de finalización
+  const formattedEndTime = `${endHour.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+  return formattedEndTime;
+};
+
 const fetchActions = async () => {
   try {
     const response = await axios.get(`${API_SERVER}/api/action/all`);
@@ -31,6 +53,31 @@ const fetchActions = async () => {
     actions.value = [];
   }
 };
+
+const filteredActions = computed(() => {
+  return actions.value.filter(activity => {
+    const { search, location, age, language, schedule, startDate, endDate } = props.filters;
+    
+    if (search && !activity.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (location && !activity.center.name.toLowerCase().includes(location.toLowerCase())) return false;
+    if (age && activity.age) {
+      const [minAge, maxAge] = age.split("-");
+      if (age === "50+" && parseInt(activity.age) < 50) return false;
+      if (parseInt(activity.age) < parseInt(minAge) || (maxAge && parseInt(activity.age) > parseInt(maxAge))) return false;
+    }
+    if (language && activity.languaje.toLowerCase() !== language.toLowerCase()) return false;
+    if (activity.start_time) {
+      const hour = parseInt(activity.start_time.split(":")[0]);
+      if (schedule === "morning" && (hour < 8 || hour >= 12)) return false;
+      if (schedule === "afternoon" && (hour < 12 || hour >= 17)) return false;
+      if (schedule === "night" && (hour < 17 || hour >= 22)) return false;
+    }
+    if (startDate && activity.date_init < startDate) return false;
+    if (endDate && activity.date_end > endDate) return false;
+
+    return true;
+  });
+});
 
 const checkUserEnrollments = async () => {
   if (!user.value) return;
@@ -99,17 +146,13 @@ onMounted(() => {
     <div v-if="filteredActions && filteredActions.length === 0" class="col-12 text-center">
       <p class="alert alert-success">No hay actividades disponibles</p>
     </div>
-    <div v-for="activity in actions" :key="activity.id" class="col-md-4">
+    <div v-for="activity in filteredActions" :key="activity.id" class="col-md-4">
       <div class="card mt-3" style="height: 400px; max-height: 400px;">
-
-        <!-- Imagen condicional según la categoría -->
         <img v-if="activity.category === 'cultura'" src="../../../assets/img/cultura.jpg" class="card-img-top" alt="Cultura" style="height: 100px; object-fit: cover;">
         <img v-else-if="activity.category === 'deportes'" src="../../../assets/img/deportes.jpg" class="card-img-top" alt="Deportes" style="height: 100px; object-fit: cover;">
-        <img v-else-if="activity.category === 'educacion'" src="../../../assets/img/eucacion.jpg" class="card-img-top" alt="Educación" style="height: 100px; object-fit: cover;">
+        <img v-else-if="activity.category === 'educacion'" src="../../../assets/img/educacion.jpg" class="card-img-top" alt="Educación" style="height: 100px; object-fit: cover;">
         <img v-else-if="activity.category === 'medio ambiente'" src="../../../assets/img/medio%20ambiente.jpg" class="card-img-top" alt="Educación" style="height: 100px; object-fit: cover;">
-
-
-        <div class="card-body d-flex justify-content-between flex-column">
+        <div class="card-body d-flex justify-content-between flex-column" >
           <div class="d-flex justify-content-between">
         <span class="badge bg-light text-dark">
           {{ activity.capacity }} plazas disponibles
@@ -120,6 +163,7 @@ onMounted(() => {
           <p class="text-secondary mb-0">{{ activity.center ? activity.center.name : 'Centro no disponible' }}</p>
           <p class="text-muted mb-0">Edad: {{ activity.age }}</p>
           <p class="text-muted mb-0">Idioma: {{ activity.languaje }}</p>
+          <p class="text-muted mb-0">Horario: {{ formatTime(activity.start_time) }} - {{ formatTime(calculateEndTime(activity.start_time, activity.duration)) }}</p>
           <p class="text-muted">Del {{ activity.date_init }} al {{ activity.date_end }}</p>
 
           <button
