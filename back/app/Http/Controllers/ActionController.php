@@ -20,7 +20,8 @@ class ActionController extends Controller
             'start_time' => 'required|date',
             'capacity' => 'required|integer',
             'price' => 'required|integer',
-            'center_id' => 'required|integer'
+            'center_id' => 'required|integer',
+            'category' => 'required|string|max:255'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -36,7 +37,8 @@ class ActionController extends Controller
             'start_time' => $request->get('start_time'),
             'capacity' => $request->get('capacity'),
             'price' => $request->get('price'),
-            'center_id' => $request->get('center_id')
+            'center_id' => $request->get('center_id'),
+            'category' => $request->get('category')
         ]);
         return response()->json(['message' => 'Accion creada', 'data' => $action], 200);
     }
@@ -65,7 +67,8 @@ class ActionController extends Controller
             'start_time' => 'sometimes|date',
             'capacity' => 'sometimes|integer',
             'price' => 'sometimes|integer',
-            'center_id' => 'sometimes|integer'
+            'center_id' => 'sometimes|integer',
+            'category' => 'sometimes|string|max:255'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -80,6 +83,7 @@ class ActionController extends Controller
         $action->start_time = $request->get('start_time', $action->start_time);
         $action->capacity = $request->get('capacity', $action->capacity);
         $action->price = $request->get('price', $action->price);
+        $action->category = $request->get('category', $action->category);
         $action->center_id = $request->get('center_id', $action->center_id);
         $action->save();
         return response()->json(['message' => 'Acción actualizada', 'data' => $action], 200);
@@ -106,7 +110,7 @@ class ActionController extends Controller
 
     public function reducirPlazas(Request $request)
     {
-        $activity = Action::find($request->activity_id);
+        $activity = Action::find($request->action_id);
 
         if (!$activity) {
             return response()->json(['success' => false, 'message' => 'Actividad no encontrada.'], 404);
@@ -122,4 +126,22 @@ class ActionController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Plazas actualizadas correctamente.']);
     }
+    public function aumentarPlazas(Request $request)
+    {
+        try {
+            $action = Action::find($request->action_id);
+
+            if (!$action) {
+                return response()->json(['success' => false, 'message' => 'Actividad no encontrada'], 404);
+            }
+
+            $action->capacity += 1; // Aumentar en 1 la capacidad
+            $action->save();
+
+            return response()->json(['success' => true, 'message' => 'Plaza añadida correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al aumentar plazas'], 500);
+        }
+    }
+
 }
