@@ -23,8 +23,9 @@ return new class extends Migration
             $table->integer('capacity');
             $table->integer('price');
             $table->integer('duration');
+            $table->string('category');
             $table->bigInteger('center_id')->unsigned();
-            $table->foreign('center_id')->references('id')->on('centers');
+            $table->foreign('center_id')->references('id')->on('centers')->onDelete('cascade');
             $table->timestamps();
         });
     }

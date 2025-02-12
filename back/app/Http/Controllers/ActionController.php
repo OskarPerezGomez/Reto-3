@@ -20,7 +20,8 @@ class ActionController extends Controller
             'start_time' => 'required|date',
             'capacity' => 'required|integer',
             'price' => 'required|integer',
-            'center_id' => 'required|integer'
+            'center_id' => 'required|integer',
+            'category' => 'required|string|max:255'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -36,7 +37,8 @@ class ActionController extends Controller
             'start_time' => $request->get('start_time'),
             'capacity' => $request->get('capacity'),
             'price' => $request->get('price'),
-            'center_id' => $request->get('center_id')
+            'center_id' => $request->get('center_id'),
+            'category' => $request->get('category')
         ]);
         return response()->json(['message' => 'Accion creada', 'data' => $action], 200);
     }
@@ -65,7 +67,8 @@ class ActionController extends Controller
             'start_time' => 'sometimes|date',
             'capacity' => 'sometimes|integer',
             'price' => 'sometimes|integer',
-            'center_id' => 'sometimes|integer'
+            'center_id' => 'sometimes|integer',
+            'category' => 'sometimes|string|max:255'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -80,6 +83,7 @@ class ActionController extends Controller
         $action->start_time = $request->get('start_time', $action->start_time);
         $action->capacity = $request->get('capacity', $action->capacity);
         $action->price = $request->get('price', $action->price);
+        $action->category = $request->get('category', $action->category);
         $action->center_id = $request->get('center_id', $action->center_id);
         $action->save();
         return response()->json(['message' => 'Acción actualizada', 'data' => $action], 200);
