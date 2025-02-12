@@ -72,6 +72,9 @@ watch(() => user.value.id, (id) => {
     fetchActions();
   }
 });
+function desinscribirse(){
+  
+}
 </script>
 
 <template>
@@ -145,7 +148,7 @@ watch(() => user.value.id, (id) => {
         <h4 class="mt-3">{{ action.name }}</h4>
         <p class="text-secondary mb-1">{{ action.center?.name }}</p>
         <p class="text-muted">Horario: {{ action.start_time }}</p>
-        <button class="btn btn-success w-100">Desinscribirse</button>
+        <button class="btn btn-danger w-100" @click="desinscribirse()">Desinscribirse</button>
       </div>
     </div>
 
