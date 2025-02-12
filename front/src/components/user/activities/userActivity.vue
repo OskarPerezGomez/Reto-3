@@ -152,12 +152,11 @@ onMounted(() => {
         <img v-else-if="activity.category === 'deportes'" src="../../../assets/img/deportes.jpg" class="card-img-top" alt="Deportes" style="height: 100px; object-fit: cover;">
         <img v-else-if="activity.category === 'educacion'" src="../../../assets/img/educacion.jpg" class="card-img-top" alt="Educación" style="height: 100px; object-fit: cover;">
         <img v-else-if="activity.category === 'medio ambiente'" src="../../../assets/img/medio%20ambiente.jpg" class="card-img-top" alt="Educación" style="height: 100px; object-fit: cover;">
-
         <div class="card-body d-flex justify-content-between flex-column" >
           <div class="d-flex justify-content-between">
-            <span class="badge bg-light text-dark">
-              {{ activity.capacity }} plazas disponibles
-            </span>
+        <span class="badge bg-light text-dark">
+          {{ activity.capacity }} plazas disponibles
+        </span>
             <span class="badge bg-light text-dark">{{ activity.price }}€/hora</span>
           </div>
           <h4 class="mt-3">{{ activity.name }}</h4>
@@ -168,24 +167,24 @@ onMounted(() => {
           <p class="text-muted">Del {{ activity.date_init }} al {{ activity.date_end }}</p>
 
           <button
-            v-if="user"
-            class="btn w-100"
-            :class="{
-              'btn-secondary': activity.capacity === 0 || !enrolledActivities[activity.id],
-              'btn-danger': enrolledActivities[activity.id],
-              'btn-success': activity.capacity > 0 && !enrolledActivities[activity.id]
-            }"
-            :disabled="activity.capacity === 0 && !enrolledActivities[activity.id]"
-            @click="toggleInscription(activity)"
+              v-if="user"
+              class="btn w-100"
+              :class="{
+          'btn-secondary': activity.capacity === 0 || !enrolledActivities[activity.id],
+          'btn-danger': enrolledActivities[activity.id],
+          'btn-success': activity.capacity > 0 && !enrolledActivities[activity.id]
+        }"
+              :disabled="activity.capacity === 0 && !enrolledActivities[activity.id]"
+              @click="toggleInscription(activity)"
           >
             {{ enrolledActivities[activity.id] ? "Desapuntarse" : activity.capacity === 0 ? "Plazas completas" : "Inscribirse" }}
           </button>
-          <button 
-            v-else 
-            @click="router.push('/login')" 
-            class="btn w-100"
-            :class="{'btn-secondary': activity.capacity === 0, 'btn-success': activity.capacity > 0}"
-            :disabled="activity.capacity === 0"
+          <button
+              v-else
+              @click="router.push('/login')"
+              class="btn w-100"
+              :class="{'btn-secondary': activity.capacity === 0, 'btn-success': activity.capacity > 0}"
+              :disabled="activity.capacity === 0"
           >
             {{ activity.capacity === 0 ? "Plazas completas" : "Inscribirse" }}
           </button>

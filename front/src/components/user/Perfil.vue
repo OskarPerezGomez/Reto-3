@@ -74,9 +74,8 @@ watch(() => user.value.id, (id) => {
     fetchActions();
   }
 });
-
-async function deinscribirte(id) {
-  const response = await axios.post(`${API_SERVER}/api/user/joinDelete`, {
+async function deinscribirte(id){
+  const response =  await axios.post(`${API_SERVER}/api/user/joinDelete`, {
     user_id: user.value.id,
     action_id: id,
   });
