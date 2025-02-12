@@ -101,5 +101,25 @@ class UserController extends Controller
             return response()->json(['message'=>'Usuario asociado','data'=>$user, $action], 200);
         }
     }
+    public function joinDelete(Request $request)
+    {
+        $user = User::findOrFail($request->user_id);
+        $action = Action::findOrFail($request->action_id);
+
+        if ($user->actions()->detach($action->id)) {
+            return response()->json(['message' => 'Usuario desapuntado correctamente'], 200);
+        }
+
+        return response()->json(['message' => 'No se encontró la inscripción'], 404);
+    }
+    public function isEnroled(Request $request) {
+        $user = User::findOrFail($request->user_id);
+
+        if (!$user) {
+            return response()->json(['enrolled' => false]);
+        }
+        $isEnrolled = $user->actions()->where('action_id', $request->action_id)->exists();
+        return response()->json(['enrolled' => $isEnrolled]);
+    }
 }
 
