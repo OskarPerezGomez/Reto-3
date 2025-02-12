@@ -72,8 +72,12 @@ watch(() => user.value.id, (id) => {
     fetchActions();
   }
 });
-function desinscribirse(){
-  
+async function deinscribirte(id){
+  const response =  await axios.post(`${API_SERVER}/api/user/joinDelete`, {
+    user_id: user.value.id,
+    action_id: id,
+  });
+  window.location.reload();
 }
 </script>
 
@@ -148,7 +152,7 @@ function desinscribirse(){
         <h4 class="mt-3">{{ action.name }}</h4>
         <p class="text-secondary mb-1">{{ action.center?.name }}</p>
         <p class="text-muted">Horario: {{ action.start_time }}</p>
-        <button class="btn btn-danger w-100" @click="desinscribirse()">Desinscribirse</button>
+        <button class="btn btn-danger w-100" @click="deinscribirte(action.id)">Desinscribirse</button>
       </div>
     </div>
 
