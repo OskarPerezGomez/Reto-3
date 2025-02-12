@@ -24,9 +24,10 @@ Route::controller(UserController::class)->group(function () {
     Route::post('user', 'store');
     Route::get('user/all','showAll');
     Route::get('user/{user}', 'show');
-    Route::put('user/{user}/update', 'update');
+    Route::post('user/{user}/update', 'update');
     Route::delete('user/{user}/destroy', 'destroy');
     Route::post('user/join', 'join');
+    Route::get('user/{user}/actions','showOne');
 });
 
 Route::controller(CenterController::class)->group(function () {
