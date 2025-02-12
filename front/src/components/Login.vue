@@ -78,36 +78,44 @@ function register(){
       <div class="card-body">
         <h3 class="card-title mb-3">Iniciar sesión</h3>
 
-        <div class="mb-3">
-          <div class="form-floating w-75 mx-auto">
-            <input
-                type="email"
-                id="email"
-                v-model="mail"
-                class="form-control"
-                placeholder=" "
-            />
-            <label for="email">Correo electrónico</label>
+        <!-- FORMULARIO PARA MANEJAR ENTER -->
+        <form @submit.prevent="validarUsuario()">
+          <div class="mb-3">
+            <div class="form-floating w-75 mx-auto">
+              <input
+                  type="email"
+                  id="email"
+                  v-model="mail"
+                  class="form-control"
+                  placeholder=" "
+                  required
+              />
+              <label for="email">Correo electrónico</label>
+            </div>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <div class="form-floating w-75 mx-auto">
-            <input
-                type="password"
-                id="pass"
-                v-model="pass"
-                class="form-control"
-                placeholder=" "
-            />
-            <label for="email">Contraseña</label>
+          <div class="mb-3">
+            <div class="form-floating w-75 mx-auto">
+              <input
+                  type="password"
+                  id="pass"
+                  v-model="pass"
+                  class="form-control"
+                  placeholder=" "
+                  required
+              />
+              <label for="pass">Contraseña</label>
+            </div>
           </div>
-        </div>
 
-        <button class="btn btn-success w-75 mx-auto my-2" @click="validarUsuario()">Iniciar sesión</button>
+          <!-- BOTÓN AHORA ES TYPE SUBMIT -->
+          <button type="submit" class="btn btn-success w-75 mx-auto my-2">
+            Iniciar sesión
+          </button>
+        </form>
 
         <p class="mt-3 text-muted">
-          <a href="" @click="register()">Registrate</a> y explora nuestras actividades deportivas y culturales
+          <a href="" @click.prevent="register()">Registrate</a> y explora nuestras actividades deportivas y culturales
         </p>
       </div>
     </div>
