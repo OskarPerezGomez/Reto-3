@@ -17,6 +17,7 @@ Route::controller(ActionController::class)->group(function () {
     Route::get('action/{action}', 'show');
     Route::put('action/{action}/update', 'update');
     Route::delete('action/{action}/destroy', 'destroy');
+    Route::post('action/reducirPlazas', 'reducirPlazas');
 });
 
 Route::controller(UserController::class)->group(function () {

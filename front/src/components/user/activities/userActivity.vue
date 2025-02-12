@@ -1,11 +1,26 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 const props = defineProps(["filters"]);
 const API_SERVER = import.meta.env.VITE_API_SERVER;
 
 const actions = ref([]);
+
+const router = useRouter();
+const user = ref(null);
+
+onMounted(() => {
+  const storedUser = sessionStorage.getItem("user");
+  if (storedUser) {
+    try {
+      user.value = JSON.parse(storedUser); // Convertimos el string a objeto
+    } catch (error) {
+      console.error("Error al parsear el usuario:", error);
+    }
+  }
+});
 
 // Función para obtener las actividades desde la API
 const fetchActions = async () => {
@@ -22,6 +37,46 @@ const fetchActions = async () => {
     actions.value = []; // Evitar problemas si la API falla
   }
 };
+
+const inscribirUsuario = async (activity) => {
+  try {
+    const userToken = sessionStorage.getItem("user");
+
+    if (!userToken) {
+      alert("Necesitas iniciar sesión para inscribirte.");
+      return;
+    }
+
+    const userId = JSON.parse(userToken).id;  // Si usas el ID del usuario en el token
+
+     // Realiza la primera petición para inscribir al usuario
+     const responseInscripcion = await axios.post(`${API_SERVER}/api/inscribir`, {
+      user_id: userId,
+      action_id: activity.id
+    });
+
+    if (!responseInscripcion.data.success) {
+      alert(responseInscripcion.data.message);
+      return;
+    }
+
+    // Realiza la segunda petición para reducir las plazas
+    const responsePlazas = await axios.post(`${API_SERVER}/api/action/reducirPlazas`, {
+      action_id: activity.id
+    });
+
+    if (responsePlazas.data.success) {
+      alert("Inscripción exitosa y plazas actualizadas!");
+      fetchActions(); // Recargar las actividades para reflejar cambios
+    } else {
+      alert("La inscripción se registró, pero no se pudo reducir la plaza.");
+    }
+  } catch (error) {
+    console.error("Error al inscribirse:", error);
+    alert("Hubo un problema al procesar tu inscripción.");
+  }
+};
+
 
 const formatTime = (time) => {
   // Si la hora está en formato 'HH:MM:SS', recortamos los últimos 3 caracteres ('SS')
@@ -81,6 +136,47 @@ const filteredActions = computed(() => {
   });
 });
 
+const toggleInscription = async (activity) => {
+  if (!user.value) {
+    window.location.href = "/login"; // Redirige a login si no hay usuario
+    return;
+  }
+
+  try {
+    if (isUserEnrolled(activity.id)) {
+      // Desapuntarse
+      await axios.post(`${API_SERVER}/api/desapuntar`, {
+        user_id: user.value.id,
+        action_id: activity.id
+      });
+      alert("Te has desapuntado correctamente.");
+    } else {
+      // Inscribirse
+      const response = await axios.post(`${API_SERVER}/api/inscribir`, {
+        user_id: user.value.id,
+        activity_id: activity.id
+      });
+
+      if (!response.data.success) {
+        alert(response.data.message);
+        return;
+      }
+
+      await axios.post(`${API_SERVER}/api/reducir-plazas`, {
+        activity_id: activity.id
+      });
+
+      alert("Inscripción exitosa!");
+    }
+
+    fetchActions(); // Actualizar actividades
+    fetchUserData(); // Actualizar usuario
+  } catch (error) {
+    console.error("Error al procesar inscripción:", error);
+    alert("Hubo un problema con la inscripción.");
+  }
+};
+
 
 
 // Ver cambios en los filtros y volver a cargar las actividades
@@ -110,7 +206,20 @@ fetchActions();
           <p class="text-muted mb-0">Horario: {{ formatTime(activity.start_time) }} - {{ calculateEndTime(activity.start_time, activity.duration) }}</p>
           <p class="text-muted">Del dia {{ activity.date_init }} al dia {{ activity.date_end }}</p>
 
-          <button class="btn btn-success w-100">Inscribirse</button>
+          <button
+            v-if="user"
+            class="btn w-100"
+            :class="{
+              'btn-secondary': activity.capacity === 0,
+              'btn-danger': isUserEnrolled(activity.id),
+              'btn-success': activity.capacity > 0 && !isUserEnrolled(activity.id)
+            }"
+            :disabled="activity.capacity === 0"
+            @click="toggleInscription(activity)"
+          >
+            {{ activity.capacity === 0 ? "Plazas completas" : isUserEnrolled(activity.id) ? "Desapuntarse" : "Inscribirse" }}
+          </button>
+          <button v-else @click="router.push('/login')" class="btn btn-success w-100">Inscribirse</button>
         </div>
       </div>
     </div>
