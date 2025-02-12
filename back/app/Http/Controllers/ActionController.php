@@ -103,4 +103,23 @@ class ActionController extends Controller
 
         return response()->json(['message' => '', 'data' => $actions], 200);
     }
+
+    public function reducirPlazas(Request $request)
+    {
+        $activity = Action::find($request->activity_id);
+
+        if (!$activity) {
+            return response()->json(['success' => false, 'message' => 'Actividad no encontrada.'], 404);
+        }
+
+        // Verificar que haya plazas disponibles
+        if ($activity->capacity <= 0) {
+            return response()->json(['success' => false, 'message' => 'No hay plazas disponibles para esta actividad.'], 400);
+        }
+
+        // Restar una plaza disponible
+        $activity->decrement('capacity', 1);
+
+        return response()->json(['success' => true, 'message' => 'Plazas actualizadas correctamente.']);
+    }
 }
