@@ -94,11 +94,11 @@ const closeModal = () => {
 
 const saveAction = async () => {
   let formattedStartTime = selectedAction.value.start_time;
-  console.log("Fecha original:", formattedStartTime); // Verificar valor recibido
+  console.log("Fecha original:", formattedStartTime);
 
-  if (formattedStartTime && formattedStartTime.length === 8) {  // Verifica si es solo hora (hh:mm:ss)
-    const today = new Date().toISOString().split('T')[0];       // Obtiene la fecha de hoy en formato "YYYY-MM-DD"
-    formattedStartTime = `${today}T${formattedStartTime}`;      // Combina fecha actual + hora
+  if (formattedStartTime && formattedStartTime.length === 8) {
+    const today = new Date().toISOString().split('T')[0];
+    formattedStartTime = `${today}T${formattedStartTime}`;
   }
 
   const dataToSend = {
@@ -119,12 +119,22 @@ const saveAction = async () => {
     );
 
     console.log(response.data);
-    alert("Acción actualizada con éxito");
+    Swal.fire({
+      confirmButtonColor: "#198754",
+      confirmButtonText: "Cerrar",
+      icon: "success",
+      title: "Acción actualizada con éxito"
+    });
     fetchActions();
     closeModal();
   } catch (error) {
     console.error("Error al actualizar la acción:", error.response?.data || error);
-    alert("Hubo un error al actualizar la acción");
+    Swal.fire({
+      confirmButtonColor: "#198754",
+      confirmButtonText: "Cerrar",
+      icon: "error",
+      title: "Hubo un error al actualizar la acción"
+    });
   }
 };
 
@@ -145,12 +155,16 @@ const deleteAction = async (id) => {
         await axios.delete(`${API_SERVER}/api/action/${id}/destroy`);
         await fetchActions();
         Swal.fire({
+          confirmButtonColor: "#198754",
+          confirmButtonText: "Cerrar",
           icon: "success",
           title: "Acción eliminada con éxito"
         });
       } catch (error) {
         console.error("Error al eliminar la acción:", error);
         Swal.fire({
+          confirmButtonColor: "#198754",
+          confirmButtonText: "Cerrar",
           icon: "error",
           title: "Hubo un error al eliminar la acción"
         });
