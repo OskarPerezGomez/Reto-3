@@ -1,7 +1,9 @@
+
+
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import {ref, onMounted, watch} from "vue";
 import Footer from "@/components/layout/Footer.vue";
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 import axios from "axios";
 
 const API_SERVER = import.meta.env.VITE_API_SERVER;
@@ -72,6 +74,14 @@ watch(() => user.value.id, (id) => {
     fetchActions();
   }
 });
+
+async function deinscribirte(id) {
+  const response = await axios.post(`${API_SERVER}/api/user/joinDelete`, {
+    user_id: user.value.id,
+    action_id: id,
+  });
+  window.location.reload();
+}
 </script>
 
 <template>
@@ -105,27 +115,27 @@ watch(() => user.value.id, (id) => {
         <div class="mb-4">
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Nombre:</label>
-            <input type="text" v-model="user.name" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.name" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Apellido:</label>
-            <input type="text" v-model="user.lastname" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.lastname" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Email:</label>
-            <input type="text" v-model="mail" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="mail" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">DNI:</label>
-            <input type="text" v-model="user.dni" class="form-control" :disabled="!isEditing" />
+            <input type="text" v-model="user.dni" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mb-3 d-flex">
             <label class="text-muted mb-1 me-4">Contraseña:</label>
-            <input type="password" v-model="pass" class="form-control" :disabled="!isEditing" />
+            <input type="password" v-model="pass" class="form-control" :disabled="!isEditing"/>
           </div>
 
           <div class="mt-3 text-center" v-if="isEditing">
@@ -145,12 +155,12 @@ watch(() => user.value.id, (id) => {
         <h4 class="mt-3">{{ action.name }}</h4>
         <p class="text-secondary mb-1">{{ action.center?.name }}</p>
         <p class="text-muted">Horario: {{ action.start_time }}</p>
-        <button class="btn btn-success w-100">Desinscribirse</button>
+        <button class="btn btn-danger w-100" @click="deinscribirte(action.id)">Desinscribirse</button>
       </div>
     </div>
 
     <div class="d-flex justify-content-center my-5">
-      <Footer />
+      <Footer/>
     </div>
   </div>
 </template>
