@@ -54,7 +54,7 @@
           </div>
           <div class="form-group d-flex justify-content-center mb-2 gap-3 col-8 offset-2">
             <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
-            <button class="btn btn-danger mt-3" @click="closeModal">Cerrar</button>
+            <button class="btn btn-danger mt-3" @click="closeModal">Cancelar</button>
           </div>
         </form>
       </div>
@@ -66,6 +66,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 // Definir las variables
 const actions = ref([]);
@@ -92,41 +93,70 @@ const closeModal = () => {
 };
 
 const saveAction = async () => {
+  let formattedStartTime = selectedAction.value.start_time;
+  console.log("Fecha original:", formattedStartTime); // Verificar valor recibido
+
+  if (formattedStartTime && formattedStartTime.length === 8) {  // Verifica si es solo hora (hh:mm:ss)
+    const today = new Date().toISOString().split('T')[0];       // Obtiene la fecha de hoy en formato "YYYY-MM-DD"
+    formattedStartTime = `${today}T${formattedStartTime}`;      // Combina fecha actual + hora
+  }
+
+  const dataToSend = {
+    ...selectedAction.value,
+    start_time: formattedStartTime,
+  };
+
   try {
-    const dataToSend = { ...selectedAction.value };
+    const response = await axios.put(
+        `${API_SERVER}/api/action/${selectedAction.value.id}/update`,
+        dataToSend,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+    );
 
-    Object.keys(dataToSend).forEach(key => {
-      if (dataToSend[key] === "" || dataToSend[key] === null || dataToSend[key] === undefined) {
-        delete dataToSend[key];
-      }
-    });
-
-    const response = await axios.put(`${API_SERVER}/api/action/${selectedAction.value.id}/update`, dataToSend, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
+    console.log(response.data);
     alert("Acción actualizada con éxito");
     fetchActions();
     closeModal();
   } catch (error) {
-    console.error("Error al actualizar la acción:", error.response ? error.response.data : error);
-    alert("Hubo un error al actualizar la acción. Verifica la consola para más detalles.");
+    console.error("Error al actualizar la acción:", error.response?.data || error);
+    alert("Hubo un error al actualizar la acción");
   }
 };
 
+
 const deleteAction = async (id) => {
-  if (confirm("¿Estás seguro de que deseas eliminar esta acción?")) {
-    try {
-      await axios.delete(`${API_SERVER}/api/action/${id}/destroy`);
-      await fetchActions();
-      alert("Acción eliminada con éxito");
-    } catch (error) {
-      console.error("Error al eliminar la acción:", error);
-      alert("Hubo un error al eliminar la acción");
+  Swal.fire({
+    title: "¿Estás seguro que deseas eliminar esta acción?",
+    text: "No podrás deshacer esta decisión",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#198754",
+    cancelButtonColor: "#d33",
+    cancelButtonText: "Cancelar",
+    confirmButtonText: "Si, Eliminarlo!"
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${API_SERVER}/api/action/${id}/destroy`);
+        await fetchActions();
+        Swal.fire({
+          icon: "success",
+          title: "Acción eliminada con éxito"
+        });
+      } catch (error) {
+        console.error("Error al eliminar la acción:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Hubo un error al eliminar la acción"
+        });
+      }
     }
-  }
+  });
 
 };
 
