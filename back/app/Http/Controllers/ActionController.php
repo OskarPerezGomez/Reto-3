@@ -106,7 +106,7 @@ class ActionController extends Controller
 
     public function reducirPlazas(Request $request)
     {
-        $activity = Action::find($request->activity_id);
+        $activity = Action::find($request->action_id);
 
         if (!$activity) {
             return response()->json(['success' => false, 'message' => 'Actividad no encontrada.'], 404);
@@ -122,4 +122,22 @@ class ActionController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Plazas actualizadas correctamente.']);
     }
+    public function aumentarPlazas(Request $request)
+    {
+        try {
+            $action = Action::find($request->action_id);
+
+            if (!$action) {
+                return response()->json(['success' => false, 'message' => 'Actividad no encontrada'], 404);
+            }
+
+            $action->capacity += 1; // Aumentar en 1 la capacidad
+            $action->save();
+
+            return response()->json(['success' => true, 'message' => 'Plaza añadida correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al aumentar plazas'], 500);
+        }
+    }
+
 }
