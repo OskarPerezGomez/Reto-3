@@ -65,7 +65,7 @@ const updateFilters = () => {
       <select v-model="filters.language" @change="updateFilters" class="form-select">
         <option value="">Selecciona idioma</option>
         <option value="Español">Español</option>
-        <option value="Ingles">Inglés</option>
+        <option value="Inglés">Inglés</option>
         <option value="Frances">Francés</option>
       </select>
     </div>
