@@ -1,5 +1,3 @@
-
-
 <script setup>
 import {ref, onMounted, watch} from "vue";
 import Footer from "@/components/layout/Footer.vue";
@@ -13,6 +11,8 @@ const user = ref({});
 const mail = ref("");
 const pass = ref("********")
 const isEditing = ref(false);
+console.log(actions)
+
 
 onMounted(() => {
   const storedUser = sessionStorage.getItem("user");
@@ -32,6 +32,7 @@ const fetchActions = async () => {
   try {
     const response = await axios.get(`${API_SERVER}/api/user/${user.value.id}/actions`);
     actions.value = response.data.data;
+    console.log(response.data.data)
   } catch (error) {
     console.error("Error al obtener las acciones:", error);
   }
@@ -79,8 +80,34 @@ async function deinscribirte(id){
     user_id: user.value.id,
     action_id: id,
   });
-  window.location.reload();
+  console.log(id) //undefinded
+  await axios.post(`${API_SERVER}/api/action/aumentarPlazas`, {
+    action_id: id,
+  });
+fetchActions();
 }
+const calculateEndTime = (startTime, durationInMinutes) => {
+  const [hours, minutes] = startTime.slice(0, 5).split(":").map(Number); // Recortamos la cadena de inicio
+  const startDate = new Date();
+  startDate.setHours(hours, minutes, 0); // Establecer la hora de inicio
+
+  startDate.setMinutes(startDate.getMinutes() + durationInMinutes); // Sumar la duración
+
+  const endHour = startDate.getHours();
+  const endMinutes = startDate.getMinutes();
+
+  // Formatear la hora de finalización
+  const formattedEndTime = `${endHour.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+  return formattedEndTime;
+};
+const formatTime = (time) => {
+  // Si la hora está en formato 'HH:MM:SS', recortamos los últimos 3 caracteres ('SS')
+  return time ? time.slice(0, 5) : '';
+};
+
+onMounted(() => {
+  fetchActions();
+})
 </script>
 
 <template>
@@ -153,8 +180,8 @@ async function deinscribirte(id){
         </div>
         <h4 class="mt-3">{{ action.name }}</h4>
         <p class="text-secondary mb-1">{{ action.center?.name }}</p>
-        <p class="text-muted">Horario: {{ action.start_time }}</p>
-        <button class="btn btn-danger w-100" @click="deinscribirte(action.id)">Desinscribirse</button>
+        <p class="text-muted mb-0">Horario: {{ formatTime(action.start_time) }} - {{ formatTime(calculateEndTime(action.start_time, action.duration)) }}</p>
+        <button class="btn btn-danger w-100 mt-3" @click="deinscribirte(action.id)">Desinscribirse</button>
       </div>
     </div>
 
