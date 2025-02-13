@@ -6,9 +6,6 @@
         <button class="btn btn-sm btn-outline-success insert" @click="insertAction(action)">
           <img src="../../assets/img/anadir.png" alt="insert">
           Nueva Actividad</button>
-        <button class="btn btn-sm btn-outline-success insert" @click="insertCenter(action)">
-        <img src="../../assets/img/anadir.png" alt="insert">
-        Nuevo centro</button>
       </div>
     </div>
 
@@ -74,30 +71,6 @@
         </form>
       </div>
     </div>
-
-
-    <div v-if="showModal" class="modal-overlay col-10 offset-1 " @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h4>Editar Acción</h4>
-        <form @submit.prevent="saveAction">
-          <div class="form-group col-8 offset-2">
-            <label for="name"><b>Nombre</b></label>
-            <input v-model="selectedCenter.nombre" id="name" type="text" class="form-control" required />
-          </div>
-          <div class="form-group col-8 offset-2">
-            <label for="duration"><b>Calle</b></label>
-            <input v-model="selectedCenter.calle" id="duration" type="time" class="form-control" required />
-          </div>
-          <div class="form-group d-flex justify-content-center mb-2 gap-3 col-8 offset-2">
-            <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
-            <button class="btn btn-danger mt-3" @click="closeModal">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-
-
   </div>
 </template>
 
@@ -119,10 +92,6 @@ const selectedAction = ref({
   age: "",
   category: "",
   center: null  // Aquí el valor de center es null por defecto
-});
-const selectedCenter = ref({
-  nombre: "",
-  calle: "",
 });
 
 // Al montar el componente, llamamos a la API para obtener los centros
