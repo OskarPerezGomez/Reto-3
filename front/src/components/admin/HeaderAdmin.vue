@@ -2,10 +2,18 @@
   <div class="container mb-3">
     <div class="row">
       <div class="col d-flex justify-content-between">
-    <div class="align-items-start">
-      <h4>Panel de Administrador</h4>
-      </div>
+        <div class="align-items-start">
+          <h4>Panel de Administrador</h4>
+        </div>
         <div class="d-flex flex-row">
+          <button class="btn btn-sm btn-outline-success insert me-4   " @click="insertAction(action)">
+            <img src="../../assets/img/anadir.png" alt="insert">
+            Nueva Actividad</button>
+          <button class="btn btn-sm btn-outline-success insert me-4   " @click="insertCentro()">
+            <img src="../../assets/img/anadir.png" alt="insert">
+            Nuevo centro</button>
+          <button class="btn btn-outline-success" @click="router.push({path:'/'})">Volver</button>
+
         <button class="btn btn-sm btn-outline-success boton me-4   " @click="insertAction(action)">
           <img src="../../assets/img/anadir.png" alt="insert">
           Nueva Actividad</button>
@@ -16,6 +24,7 @@
     </div>
 
     <div v-if="showModal" class="modal-overlay col-10 offset-1 mt-3" @click="closeModal">
+    <div v-if="showModal" class="modal-overlay col-10 offset-1 my-3" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h4 class="d-flex justify-content-center mt-3">Insertar Acción</h4>
         <form @submit.prevent="saveAction">
@@ -82,6 +91,35 @@
       </div>
     </div>
 
+
+
+    <div v-if="showModalCentro" class="modal-overlay col-10 offset-1 my-3" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <h4>Crear centro</h4>
+        <form @submit.prevent="saveCenter">
+          <div class="form-group col-8 offset-2">
+            <label for="name"><b>Nombre</b></label>
+            <input v-model="nombreCentro" id="name" type="text" class="form-control" required />
+          </div>
+          <div class="form-group col-8 offset-2">
+            <label for="description"><b>Calle</b></label>
+            <textarea v-model="calleCentro" id="calle" class="form-control" required />
+          </div>
+          <div class="d-flex justify-content-center gap-4">
+          <div class="d-flex justify-content-center">
+            <input type="submit" class="btn btn-success my-3" @click="insertarCentro()">
+          </div>
+          <div class="d-flex justify-content-center">
+            <input type="submit" class="btn btn-success my-3" @click="cerrarModal()" value="Cancelar">
+          </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
+
   </div>
 </template>
 
@@ -89,10 +127,14 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import Swal from "sweetalert2";
+import {useRouter} from "vue-router";
 
 const API_SERVER = import.meta.env.VITE_API_SERVER;
 const centers = ref([]);
 const showModal = ref(false);
+const showModalCentro = ref(false);
+const nombreCentro=ref("");
+const calleCentro = ref("");
 const selectedAction = ref({
   name: "",
   description: "",
@@ -107,12 +149,17 @@ const selectedAction = ref({
   category: "",
   center_id: null
 });
+const router = useRouter();
+
+// Al montar el componente, llamamos a la API para obtener los centros
 
 onMounted(() => {
   fetchCenters();
   fetchActions();
 });
-
+function cerrarModal(){
+  showModalCentro.value = false;
+}
 const fetchCenters = async () => {
   try {
     const response = await axios.get(`${API_SERVER}/api/center/all`);
@@ -122,7 +169,19 @@ const fetchCenters = async () => {
   }
 };
 
+const insertCentro = () => {
+  showModalCentro.value = true;
+  showModal.value=false;
+}
+async function insertarCentro(){
+  const response = await axios.post(`${API_SERVER}/api/center`, {
+    name: nombreCentro.value,
+    address: calleCentro.value,
+  });
+  showModalCentro.value=false;
+}
 const insertAction = (action) => {
+  showModalCentro.value = false;
   selectedAction.value = { ...action };
   showModal.value = true;
 };
@@ -136,6 +195,41 @@ const fetchActions = async () => {
 };
 const closeModal = () => {
   showModal.value = false;
+};
+const saveCenter = async () => {
+  try {
+    if (!nombreCentro.value.length || nombreCentro.value.length > 255) {
+      Swal.fire({
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Cerrar",
+        icon: "warning",
+        title: "Introduce un nombre válido",
+      });
+      return;
+    }
+    if (!calleCentro.value.length || calleCentro.value.length > 255) {
+      Swal.fire({
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Cerrar",
+        icon: "warning",
+        title: "Introduce una calle válida",
+      });
+      return;
+    }
+
+    // Aquí iría la lógica para guardar el centro
+    console.log("Centro guardado correctamente");
+
+  } catch (error) {
+    console.error("Error al guardar el centro:", error);
+    Swal.fire({
+      confirmButtonColor: "#dc3545",
+      confirmButtonText: "Cerrar",
+      icon: "error",
+      title: "Ocurrió un error",
+      text: "No se pudo guardar el centro. Inténtalo de nuevo.",
+    });
+  }
 };
 
 const saveAction = async () => {
@@ -167,6 +261,7 @@ const saveAction = async () => {
     formattedDateEnd = formattedDateEnd.split("T")[0];
   }
 
+  // 🔹 Validación: Si el usuario no ha seleccionado una categoría, mostramos alerta y detenemos el envío
   if (!selectedAction.value.category) {
     Swal.fire({
       confirmButtonColor: "#198754",
@@ -201,6 +296,7 @@ const saveAction = async () => {
       title: "Acción creada con éxito",
     });
 
+    // 🔹 Reiniciamos el formulario
     selectedAction.value = {
       name: "",
       description: "",
@@ -227,6 +323,8 @@ const saveAction = async () => {
     });
   }
 };
+
+
 </script>
 
 <style scoped>
