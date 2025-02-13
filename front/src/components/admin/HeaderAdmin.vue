@@ -6,16 +6,16 @@
       <h4>Panel de Administrador</h4>
       </div>
         <div class="d-flex flex-row">
-        <button class="btn btn-sm btn-outline-success insert me-4   " @click="insertAction(action)">
+        <button class="btn btn-sm btn-outline-success boton me-4   " @click="insertAction(action)">
           <img src="../../assets/img/anadir.png" alt="insert">
           Nueva Actividad</button>
-        <button class="btn btn-outline-success" @click="router.push('/')">Volver</button>
+        <button class="btn btn-outline-danger boton" @click="router.push('/')">Volver</button>
         </div>
       </div>
 
     </div>
 
-    <div v-if="showModal" class="modal-overlay col-10 offset-1 " @click="closeModal">
+    <div v-if="showModal" class="modal-overlay col-10 offset-1 mt-3" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h4 class="d-flex justify-content-center mt-3">Insertar Acción</h4>
         <form @submit.prevent="saveAction">
@@ -108,9 +108,9 @@ const selectedAction = ref({
   center_id: null
 });
 
-// Al montar el componente, llamamos a la API para obtener los centros
 onMounted(() => {
   fetchCenters();
+  fetchActions();
 });
 
 const fetchCenters = async () => {
@@ -126,7 +126,14 @@ const insertAction = (action) => {
   selectedAction.value = { ...action };
   showModal.value = true;
 };
-
+const fetchActions = async () => {
+  try {
+    const response = await axios.get(`${API_SERVER}/api/action/center`);
+    actions.value = response.data.data;
+  } catch (error) {
+    console.error("Error al obtener las acciones:", error);
+  }
+};
 const closeModal = () => {
   showModal.value = false;
 };
@@ -138,7 +145,7 @@ const saveAction = async () => {
 
   if (formattedDateInit && formattedDateEnd && formattedDateInit > formattedDateEnd) {
     Swal.fire({
-      confirmButtonColor: "#dc3545",
+      confirmButtonColor: "#198754",
       confirmButtonText: "Cerrar",
       icon: "error",
       title: "Error en las fechas",
@@ -162,7 +169,7 @@ const saveAction = async () => {
 
   if (!selectedAction.value.category) {
     Swal.fire({
-      confirmButtonColor: "#dc3545",
+      confirmButtonColor: "#198754",
       confirmButtonText: "Cerrar",
       icon: "warning",
       title: "Debes seleccionar una categoría antes de continuar",
@@ -208,8 +215,7 @@ const saveAction = async () => {
       category: "",
       center_id: null,
     };
-
-    fetchActions();
+    await fetchActions();
     closeModal();
   } catch (error) {
     console.error("Error al crear la acción:", error.response?.data || error);
@@ -221,12 +227,10 @@ const saveAction = async () => {
     });
   }
 };
-
-
 </script>
 
 <style scoped>
-.insert {
+.boton {
   margin: 0;
   display: flex;
   justify-content: center;
@@ -234,11 +238,11 @@ const saveAction = async () => {
   color: black;
 }
 
-.insert:hover {
+.boton:hover {
   color: black;
 }
 
-.insert img {
+.boton img {
   width: 16px;
   margin-right: 6px;
 }
