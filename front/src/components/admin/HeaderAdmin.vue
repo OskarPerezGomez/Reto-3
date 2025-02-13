@@ -17,7 +17,7 @@
 
     <div v-if="showModal" class="modal-overlay col-10 offset-1 " @click="closeModal">
       <div class="modal-content" @click.stop>
-        <h4>Insertar Acción</h4>
+        <h4 class="d-flex justify-content-center mt-3">Insertar Acción</h4>
         <form @submit.prevent="saveAction">
           <div class="form-group col-8 offset-2">
             <label for="name"><b>Nombre</b></label>
@@ -108,7 +108,6 @@ const selectedAction = ref({
   center_id: null
 });
 
-
 // Al montar el componente, llamamos a la API para obtener los centros
 onMounted(() => {
   fetchCenters();
@@ -137,6 +136,17 @@ const saveAction = async () => {
   let formattedDateInit = selectedAction.value.date_init;
   let formattedDateEnd = selectedAction.value.date_end;
 
+  if (formattedDateInit && formattedDateEnd && formattedDateInit > formattedDateEnd) {
+    Swal.fire({
+      confirmButtonColor: "#dc3545",
+      confirmButtonText: "Cerrar",
+      icon: "error",
+      title: "Error en las fechas",
+      text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
+    });
+    return;
+  }
+
   if (formattedStartTime && formattedStartTime.length === 5) {
     const today = new Date().toISOString().split("T")[0];
     formattedStartTime = `${today} ${formattedStartTime}:00`;
@@ -150,7 +160,6 @@ const saveAction = async () => {
     formattedDateEnd = formattedDateEnd.split("T")[0];
   }
 
-  // 🔹 Validación: Si el usuario no ha seleccionado una categoría, mostramos alerta y detenemos el envío
   if (!selectedAction.value.category) {
     Swal.fire({
       confirmButtonColor: "#dc3545",
@@ -185,7 +194,6 @@ const saveAction = async () => {
       title: "Acción creada con éxito",
     });
 
-    // 🔹 Reiniciamos el formulario
     selectedAction.value = {
       name: "",
       description: "",
@@ -197,7 +205,7 @@ const saveAction = async () => {
       capacity: "",
       languaje: "",
       age: "",
-      category: "", // 💡 Reiniciamos `category`
+      category: "",
       center_id: null,
     };
 
